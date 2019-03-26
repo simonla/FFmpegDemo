@@ -1,16 +1,13 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+file(GLOB my_source src/main/cpp/*.cpp src/main/cpp/*.c)
+set(distribution_DIR ${CMAKE_SOURCE_DIR}/libs)
 set(CURRENT_DIR ${CMAKE_SOURCE_DIR})
-message("CURRENT_DIR:" ${CMAKE_SOURCE_DIR})
 
 add_library(native-lib
         SHARED
-        src/main/cpp/native-lib.cpp)
-
-find_library(log-lib
-        log)
-
-include_directories(./libs/include)
+        ${my_source}
+        )
 
 add_library(avcodec SHARED IMPORTED)
 add_library(avdevice SHARED IMPORTED)
@@ -24,12 +21,10 @@ set_target_properties(swresample
         PROPERTIES IMPORTED_LOCATION
         ${CURRENT_DIR}/libs/${ANDROID_ABI}/libswresample.so
         )
-
 set_target_properties(avcodec
         PROPERTIES IMPORTED_LOCATION
         ${CURRENT_DIR}/libs/${ANDROID_ABI}/libavcodec.so
         )
-
 set_target_properties(avdevice
         PROPERTIES IMPORTED_LOCATION
         ${CURRENT_DIR}/libs/${ANDROID_ABI}/libavdevice.so
@@ -51,9 +46,11 @@ set_target_properties(swscale
         ${CURRENT_DIR}/libs/${ANDROID_ABI}/libswscale.so
         )
 
-target_link_libraries( # Specifies the target library.
-        native-lib
+include_directories(libs/include)
+target_link_libraries(native-lib
         -landroid
         avcodec avdevice avfilter avformat avutil swscale swresample
-        ${log-lib}
+        log
+        android
+        OpenSLES
         )
