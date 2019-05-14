@@ -5,6 +5,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.SurfaceView
 import android.view.View
 import android.widget.SeekBar
@@ -52,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.finish()
+    }
+
     private fun init() {
         mSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
@@ -76,7 +82,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun player(view: View) {
-        val file = File(Environment.getExternalStorageDirectory(), "sample2.mkv")
+        val path = intent.extras.getString("path")
+        Log.d("MainActivity", path)
+        val file = File(path)
         //   davidPlayer.playJava("http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4");
         davidPlayer.playJava(file.absolutePath)
         // mTextView.setText(davidPlayer.getTotalTime()+"");
